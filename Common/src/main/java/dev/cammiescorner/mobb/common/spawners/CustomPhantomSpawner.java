@@ -16,6 +16,7 @@ import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 
@@ -41,8 +42,9 @@ public class CustomPhantomSpawner implements CustomSpawner {
 				for(ServerPlayer player : level.players()) {
 					if(!player.isSpectator() && !player.isCreative() && player.isFallFlying()) {
 						BlockPos pos = player.blockPosition();
+						int minHeight = Math.max(level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos).getY(), level.getSeaLevel()) + 24;
 
-						if(!level.dimensionType().hasSkyLight() || (pos.getY() >= level.getSeaLevel() && level.canSeeSky(pos))) {
+						if(!level.dimensionType().hasSkyLight() || (pos.getY() > minHeight && level.canSeeSky(pos))) {
 							DifficultyInstance difficulty = level.getCurrentDifficultyAt(pos);
 							boolean noPhantomsTargetingPlayer = level.getEntities(EntityTypeTest.forClass(PhantomEntity.class), phantom -> player.equals(phantom.getTarget())).isEmpty();
 
